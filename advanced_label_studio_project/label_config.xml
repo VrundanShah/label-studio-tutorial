@@ -1,0 +1,89 @@
+
+<View>
+  <Header value="Advanced Image Analysis with RGB Extraction and Brush Annotation"/>
+  
+  <!-- Load Chart.js for graph visualization -->
+  <HyperText name="chart_loader" value='&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;'/>
+  
+  <!-- Image display with zoom and crosshair -->
+  <Image name="image" value="$image" zoom="true" zoomBy="1.5" crosshair="true"/>
+  
+  <!-- Brush annotation for painting on image -->
+  <BrushLabels name="brush" toName="image">
+    <Label value="object" background="red"/>
+    <Label value="background" background="blue"/>
+    <Label value="region_of_interest" background="green"/>
+    <Label value="defect" background="orange"/>
+    <Label value="highlight" background="yellow"/>
+    <Label value="shadow" background="purple"/>
+    <Label value="edge" background="cyan"/>
+  </BrushLabels>
+  
+  <!-- Point annotation for marking clicked locations -->
+  <KeyPointLabels name="points" toName="image">
+    <Label value="rgb_sample" background="purple"/>
+    <Label value="reference_point" background="cyan"/>
+    <Label value="color_check" background="orange"/>
+  </KeyPointLabels>
+  
+  <!-- Rectangle annotation for object detection -->
+  <RectangleLabels name="objects" toName="image">
+    <Label value="main_object" background="red"/>
+    <Label value="secondary_object" background="blue"/>
+    <Label value="anomaly" background="orange"/>
+  </RectangleLabels>
+  
+  <!-- RGB Information Display -->
+  <View style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 6px;">
+    <Header value="RGB Color Information &amp; Analysis"/>
+    <Text name="rgb_info" value="Click on the image to extract RGB values and see them plotted on the graph" />
+  </View>
+  
+  <!-- RGB Data Storage with Graph Data -->
+  <TextArea name="rgb_data" 
+            toName="image" 
+            placeholder="RGB extraction data with graph visualization will be stored here in JSON format..." 
+            rows="6"
+            required="false"/>
+  
+  <!-- Brush Annotation Analysis -->
+  <TextArea name="brush_analysis" 
+            toName="image" 
+            placeholder="Analysis of brush annotations and their correlation with RGB data..." 
+            rows="4"
+            required="false"/>
+  
+  <!-- Analysis Notes -->
+  <TextArea name="analysis_notes" 
+            toName="image" 
+            placeholder="Add your comprehensive analysis notes about the image, colors, objects, and annotations..." 
+            rows="3"
+            required="false"/>
+  
+  <!-- Object Type Classification -->
+  <Choices name="object_type" toName="image" choice="single">
+    <Choice value="product"/>
+    <Choice value="defective_item"/>
+    <Choice value="sample"/>
+    <Choice value="reference"/>
+    <Choice value="test_image"/>
+    <Choice value="calibration"/>
+    <Choice value="other"/>
+  </Choices>
+  
+  <!-- Color Analysis Type -->
+  <Choices name="color_analysis_type" toName="image" choice="multiple">
+    <Choice value="dominant_colors"/>
+    <Choice value="color_variance"/>
+    <Choice value="color_distribution"/>
+    <Choice value="color_defects"/>
+    <Choice value="color_matching"/>
+  </Choices>
+  
+  <!-- Quality Assessment -->
+  <Rating name="color_quality" toName="image" maxRating="5" icon="star" size="medium"/>
+  
+  <!-- Image Processing Quality -->
+  <Rating name="image_clarity" toName="image" maxRating="5" icon="circle" size="medium"/>
+  
+</View>

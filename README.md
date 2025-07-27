@@ -1,9 +1,10 @@
-# Label Studio RGB Extractor
+# Advanced Label Studio RGB Extractor with Graph Visualization
 
-This project implements RGB pixel value extraction functionality for Label Studio, allowing you to click on images and extract the RGB color values at specific pixel locations.
+This project implements comprehensive RGB pixel value extraction functionality for Label Studio, featuring real-time graph visualization, brush annotation tools, and advanced color analysis capabilities.
 
 ## 🎨 Features
 
+### Core RGB Extraction
 - **Click-to-Extract**: Click anywhere on an image to get RGB values at that pixel
 - **Real-time Display**: See RGB values, hex codes, and color previews instantly
 - **Position Tracking**: Get both display and actual pixel coordinates
@@ -11,47 +12,105 @@ This project implements RGB pixel value extraction functionality for Label Studi
 - **Label Studio Integration**: Seamlessly integrates with Label Studio's annotation workflow
 - **Zoom Support**: Works with Label Studio's zoom functionality for precise pixel selection
 
+### Advanced Visualization
+- **📊 Real-time Graphs**: Interactive Chart.js graphs showing RGB trends across samples
+- **📈 Statistical Analysis**: View averages, ranges, and color distributions
+- **🎯 Live Updates**: Graphs update in real-time as you extract RGB values
+- **📋 Export Capabilities**: Export RGB data and graphs for further analysis
+
+### Brush Annotation Integration
+- **🖌️ Paint on Images**: Use brush tools to mark objects and regions
+- **🎨 Multiple Categories**: Different colors for objects, defects, backgrounds, etc.
+- **🔗 Data Correlation**: Link brush annotations with RGB extraction data
+- **📊 Region Analysis**: Analyze color consistency within annotated regions
+
+### Object Detection Support  
+- **📦 Rectangle Annotations**: Draw bounding boxes around objects
+- **📍 Point Markers**: Mark specific points of interest for RGB sampling
+- **⭐ Quality Ratings**: Rate color quality and image clarity
+- **📝 Comprehensive Notes**: Document findings and analysis
+
 ## 📁 Project Structure
 
 ```
-├── README.md                           # This file
-├── label_config.xml                    # Basic Label Studio configuration
-├── custom_rgb_extractor.html           # Standalone RGB extractor demo
-├── custom_label_studio_frontend.js     # JavaScript plugin for Label Studio
-├── label_studio_config.py              # Setup script
-├── start_label_studio.sh              # Label Studio startup script
-└── label_studio_project/               # Generated project files
-    ├── label_config.xml                # Complete Label Studio config
-    ├── tasks.json                      # Sample tasks with images
-    └── instructions.md                 # Usage instructions
+├── README.md                                    # This comprehensive guide
+├── requirements.txt                             # Python dependencies
+├── integration_guide.md                        # Advanced integration guide
+│
+├── Basic RGB Extraction:
+├── label_config.xml                            # Basic Label Studio configuration
+├── custom_rgb_extractor.html                  # Standalone RGB extractor demo
+├── custom_label_studio_frontend.js            # Basic JavaScript plugin
+├── label_studio_config.py                     # Basic setup script
+├── start_label_studio.sh                      # Basic startup script
+└── label_studio_project/                      # Basic project files
+    ├── label_config.xml                       # Basic Label Studio config
+    ├── tasks.json                             # Sample tasks
+    └── instructions.md                        # Basic usage instructions
+│
+├── Advanced Features:
+├── advanced_label_config.xml                  # Advanced Label Studio configuration
+├── advanced_rgb_visualizer.html               # Advanced standalone demo with graphs
+├── advanced_label_studio_plugin.js            # Advanced plugin with graph visualization
+├── advanced_setup.py                          # Advanced setup script
+├── start_advanced_label_studio.sh             # Advanced startup script
+└── advanced_label_studio_project/             # Advanced project files
+    ├── label_config.xml                       # Advanced config with brush + graphs
+    ├── tasks.json                             # Sample tasks with real product images
+    └── instructions.md                        # Comprehensive usage guide
 ```
 
 ## 🚀 Quick Start
 
-### Option 1: Use with Label Studio (Recommended)
+### Option 1: Advanced Features (Recommended)
+
+1. **Install dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Set up advanced project**:
+   ```bash
+   python3 advanced_setup.py
+   ```
+
+3. **Start advanced Label Studio**:
+   ```bash
+   ./start_advanced_label_studio.sh
+   ```
+
+4. **Open Label Studio**: 
+   - Navigate to http://localhost:8080
+   - Try the comprehensive features:
+     - Click images for RGB extraction with real-time graphs
+     - Use brush tools to annotate objects and regions
+     - Draw rectangles around objects
+     - Export detailed analysis data
+
+### Option 2: Basic Features
 
 1. **Install Label Studio**:
    ```bash
    pip install label-studio
    ```
 
-2. **Start the RGB extraction project**:
+2. **Start basic RGB extraction**:
    ```bash
    ./start_label_studio.sh
    ```
 
-3. **Open Label Studio**:
-   - Navigate to http://localhost:8080
-   - Create an account or log in
-   - Start annotating images with RGB extraction
+### Option 3: Standalone Demos
 
-### Option 2: Standalone Demo
-
-1. **Open the standalone demo**:
+1. **Advanced demo with graphs**:
    ```bash
-   # Open custom_rgb_extractor.html in your browser
    python3 -m http.server 8000
-   # Then visit http://localhost:8000/custom_rgb_extractor.html
+   # Visit: http://localhost:8000/advanced_rgb_visualizer.html
+   ```
+
+2. **Basic demo**:
+   ```bash
+   python3 -m http.server 8000
+   # Visit: http://localhost:8000/custom_rgb_extractor.html
    ```
 
 ## 🎯 How to Use

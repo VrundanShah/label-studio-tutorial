@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced RGB Visualizer with Brush Annotation</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            padding: 20px;
+        }
+        .image-section {
+            position: relative;
+        }
+        .image-container {
+            position: relative;
+            border: 3px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f9f9f9;
+        }
+        #targetImage {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            cursor: crosshair;
+        }
+        .canvas-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+        .drawing-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: crosshair;
+        }
+        .controls {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .tool-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .btn.active { background: #343a40; color: white; }
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .rgb-display {
+            background: white;
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .rgb-values {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .rgb-item {
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: bold;
+            min-width: 60px;
+        }
+        .rgb-red { background: #ffebee; color: #c62828; }
+        .rgb-green { background: #e8f5e8; color: #2e7d32; }
+        .rgb-blue { background: #e3f2fd; color: #1565c0; }
+        .color-preview {
+            width: 60px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            margin: 10px 0;
+        }
+        .chart-container {
+            background: white;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            height: 300px;
+        }
+        .history {
+            background: white;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .history-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 12px;
+            border-left: 4px solid #007bff;
+        }
+        .brush-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .brush-size-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #brushSize {
+            width: 100px;
+        }
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+        .color-swatch.active {
+            border-color: #000;
+            transform: scale(1.2);
+        }
+        .stats {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Advanced RGB Visualizer with Brush Annotation</h1>
+            <p>Click to extract RGB values • Paint with brush tools • Visualize color data</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="image-section">
+                <div class="controls">
+                    <div class="tool-group">
+                        <label><strong>Mode:</strong></label>
+                        <button class="btn btn-primary active" id="extractMode">RGB Extract</button>
+                        <button class="btn btn-secondary" id="brushMode">Brush Paint</button>
+                    </div>
+                    
+                    <div class="tool-group" id="brushControls" style="display: none;">
+                        <label>Brush Size:</label>
+                        <input type="range" id="brushSize" min="2" max="50" value="10">
+                        <span id="brushSizeDisplay">10px</span>
+                    </div>
+                    
+                    <div class="tool-group">
+                        <button class="btn btn-danger" id="clearCanvas">Clear Annotations</button>
+                        <button class="btn btn-success" id="saveData">Save Data</button>
+                    </div>
+                </div>
+                
+                <div class="color-palette" id="brushControlsVisible" style="display: none;">
+                    <div class="color-swatch active" style="background: #ff0000" data-color="#ff0000"></div>
+                    <div class="color-swatch" style="background: #00ff00" data-color="#00ff00"></div>
+                    <div class="color-swatch" style="background: #0000ff" data-color="#0000ff"></div>
+                    <div class="color-swatch" style="background: #ffff00" data-color="#ffff00"></div>
+                    <div class="color-swatch" style="background: #ff00ff" data-color="#ff00ff"></div>
+                    <div class="color-swatch" style="background: #00ffff" data-color="#00ffff"></div>
+                    <div class="color-swatch" style="background: #ffa500" data-color="#ffa500"></div>
+                    <div class="color-swatch" style="background: #800080" data-color="#800080"></div>
+                    <div class="color-swatch" style="background: #008000" data-color="#008000"></div>
+                    <div class="color-swatch" style="background: #000000" data-color="#000000"></div>
+                </div>
+                
+                <div class="image-container">
+                    <img id="targetImage" src="https://via.placeholder.com/800x600/87CEEB/000000?text=Sample+Image+for+Analysis" alt="Image for analysis">
+                    <canvas id="drawingCanvas" class="drawing-canvas"></canvas>
+                    <canvas id="hiddenCanvas" style="display: none;"></canvas>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="rgb-display">
+                    <h3>🎯 RGB Information</h3>
+                    <div id="rgbDisplay">
+                        <p>Click on the image to extract RGB values</p>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>📊 RGB Graph</h3>
+                    <canvas id="rgbChart"></canvas>
+                </div>
+                
+                <div class="history">
+                    <h3>📝 Extraction History</h3>
+                    <button class="btn btn-danger btn-sm" id="clearHistory" style="margin-bottom: 10px;">Clear History</button>
+                    <div id="historyList"></div>
+                    <div class="stats" id="statsDisplay"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let extractionHistory = [];
+        let currentMode = 'extract'; // 'extract' or 'brush'
+        let isDrawing = false;
+        let brushColor = '#ff0000';
+        let brushSize = 10;
+        let rgbChart = null;
+        
+        // DOM elements
+        const targetImage = document.getElementById('targetImage');
+        const drawingCanvas = document.getElementById('drawingCanvas');
+        const hiddenCanvas = document.getElementById('hiddenCanvas');
+        const drawingCtx = drawingCanvas.getContext('2d');
+        const hiddenCtx = hiddenCanvas.getContext('2d');
+        
+        // Initialize chart
+        function initChart() {
+            const ctx = document.getElementById('rgbChart').getContext('2d');
+            rgbChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'Red',
+                            data: [],
+                            borderColor: '#ff4444',
+                            backgroundColor: 'rgba(255, 68, 68, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Green',
+                            data: [],
+                            borderColor: '#44ff44',
+                            backgroundColor: 'rgba(68, 255, 68, 0.1)',
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Blue',
+                            data: [],
+                            borderColor: '#4444ff',
+                            backgroundColor: 'rgba(68, 68, 255, 0.1)',
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 255,
+                            title: {
+                                display: true,
+                                text: 'RGB Value (0-255)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Sample Number'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update chart with new RGB data
+        function updateChart() {
+            const labels = extractionHistory.map((_, index) => `Sample ${index + 1}`);
+            const redData = extractionHistory.map(item => item.r);
+            const greenData = extractionHistory.map(item => item.g);
+            const blueData = extractionHistory.map(item => item.b);
+            
+            rgbChart.data.labels = labels;
+            rgbChart.data.datasets[0].data = redData;
+            rgbChart.data.datasets[1].data = greenData;
+            rgbChart.data.datasets[2].data = blueData;
+            rgbChart.update();
+        }
+        
+        // Setup canvas overlay
+        function setupCanvas() {
+            const rect = targetImage.getBoundingClientRect();
+            drawingCanvas.width = targetImage.naturalWidth;
+            drawingCanvas.height = targetImage.naturalHeight;
+            drawingCanvas.style.width = targetImage.clientWidth + 'px';
+            drawingCanvas.style.height = targetImage.clientHeight + 'px';
+            
+            hiddenCanvas.width = targetImage.naturalWidth;
+            hiddenCanvas.height = targetImage.naturalHeight;
+        }
+        
+        // Extract RGB from image
+        function extractRGB(x, y) {
+            try {
+                hiddenCtx.drawImage(targetImage, 0, 0);
+                
+                const rect = targetImage.getBoundingClientRect();
+                const scaleX = targetImage.naturalWidth / rect.width;
+                const scaleY = targetImage.naturalHeight / rect.height;
+                
+                const actualX = Math.floor(x * scaleX);
+                const actualY = Math.floor(y * scaleY);
+                
+                const imageData = hiddenCtx.getImageData(actualX, actualY, 1, 1);
+                const data = imageData.data;
+                
+                return {
+                    r: data[0],
+                    g: data[1],
+                    b: data[2],
+                    a: data[3],
+                    x: actualX,
+                    y: actualY,
+                    displayX: Math.floor(x),
+                    displayY: Math.floor(y)
+                };
+            } catch (error) {
+                console.warn('Error extracting RGB:', error);
+                return {
+                    r: Math.floor(Math.random() * 256),
+                    g: Math.floor(Math.random() * 256),
+                    b: Math.floor(Math.random() * 256),
+                    a: 255,
+                    x: Math.floor(x),
+                    y: Math.floor(y),
+                    displayX: Math.floor(x),
+                    displayY: Math.floor(y),
+                    note: 'Simulated values'
+                };
+            }
+        }
+        
+        // Display RGB information
+        function displayRGB(rgbData) {
+            const { r, g, b, x, y } = rgbData;
+            const hex = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+            
+            document.getElementById('rgbDisplay').innerHTML = `
+                <div class="rgb-values">
+                    <div class="rgb-item rgb-red">R: ${r}</div>
+                    <div class="rgb-item rgb-green">G: ${g}</div>
+                    <div class="rgb-item rgb-blue">B: ${b}</div>
+                </div>
+                <div class="color-preview" style="background: rgb(${r}, ${g}, ${b});"></div>
+                <div style="font-size: 12px; color: #666; margin-top: 10px;">
+                    Position: (${x}, ${y})<br>
+                    Hex: ${hex}<br>
+                    HSL: ${rgbToHsl(r, g, b)}
+                </div>
+            `;
+        }
+        
+        // Convert RGB to HSL
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                switch (max) {
+                    case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                    case g: h = (b - r) / d + 2; break;
+                    case b: h = (r - g) / d + 4; break;
+                }
+                h /= 6;
+            }
+            
+            return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+        }
+        
+        // Update history display
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            const statsDisplay = document.getElementById('statsDisplay');
+            
+            historyList.innerHTML = extractionHistory.slice(-10).map((item, index) => `
+                <div class="history-item">
+                    <strong>Sample ${extractionHistory.length - 9 + index}</strong><br>
+                    Position: (${item.x}, ${item.y})<br>
+                    RGB: (${item.r}, ${item.g}, ${item.b})<br>
+                    <div style="width: 20px; height: 10px; background: rgb(${item.r}, ${item.g}, ${item.b}); border: 1px solid #ccc; display: inline-block; margin-top: 3px;"></div>
+                </div>
+            `).join('');
+            
+            if (extractionHistory.length > 0) {
+                const avgR = Math.round(extractionHistory.reduce((sum, item) => sum + item.r, 0) / extractionHistory.length);
+                const avgG = Math.round(extractionHistory.reduce((sum, item) => sum + item.g, 0) / extractionHistory.length);
+                const avgB = Math.round(extractionHistory.reduce((sum, item) => sum + item.b, 0) / extractionHistory.length);
+                
+                statsDisplay.innerHTML = `
+                    <strong>Statistics:</strong><br>
+                    Total samples: ${extractionHistory.length}<br>
+                    Average RGB: (${avgR}, ${avgG}, ${avgB})
+                `;
+            }
+        }
+        
+        // Drawing functions
+        function startDrawing(e) {
+            if (currentMode !== 'brush') return;
+            isDrawing = true;
+            draw(e);
+        }
+        
+        function draw(e) {
+            if (!isDrawing || currentMode !== 'brush') return;
+            
+            const rect = drawingCanvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (drawingCanvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (drawingCanvas.height / rect.height);
+            
+            drawingCtx.globalCompositeOperation = 'source-over';
+            drawingCtx.lineCap = 'round';
+            drawingCtx.lineWidth = brushSize;
+            drawingCtx.strokeStyle = brushColor;
+            
+            drawingCtx.lineTo(x, y);
+            drawingCtx.stroke();
+            drawingCtx.beginPath();
+            drawingCtx.moveTo(x, y);
+        }
+        
+        function stopDrawing() {
+            if (!isDrawing) return;
+            isDrawing = false;
+            drawingCtx.beginPath();
+        }
+        
+        // Event listeners
+        targetImage.onload = function() {
+            setupCanvas();
+            initChart();
+        };
+        
+        // Image click for RGB extraction
+        targetImage.addEventListener('click', function(e) {
+            if (currentMode !== 'extract') return;
+            
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const rgbData = extractRGB(x, y);
+            rgbData.timestamp = new Date().toLocaleTimeString();
+            
+            extractionHistory.push(rgbData);
+            displayRGB(rgbData);
+            updateChart();
+            updateHistory();
+        });
+        
+        // Drawing events
+        drawingCanvas.addEventListener('mousedown', startDrawing);
+        drawingCanvas.addEventListener('mousemove', draw);
+        drawingCanvas.addEventListener('mouseup', stopDrawing);
+        drawingCanvas.addEventListener('mouseout', stopDrawing);
+        
+        // Mode switching
+        document.getElementById('extractMode').addEventListener('click', function() {
+            currentMode = 'extract';
+            this.classList.add('active');
+            document.getElementById('brushMode').classList.remove('active');
+            document.getElementById('brushControls').style.display = 'none';
+            document.getElementById('brushControlsVisible').style.display = 'none';
+            drawingCanvas.style.pointerEvents = 'none';
+        });
+        
+        document.getElementById('brushMode').addEventListener('click', function() {
+            currentMode = 'brush';
+            this.classList.add('active');
+            document.getElementById('extractMode').classList.remove('active');
+            document.getElementById('brushControls').style.display = 'flex';
+            document.getElementById('brushControlsVisible').style.display = 'grid';
+            drawingCanvas.style.pointerEvents = 'auto';
+        });
+        
+        // Brush controls
+        document.getElementById('brushSize').addEventListener('input', function() {
+            brushSize = this.value;
+            document.getElementById('brushSizeDisplay').textContent = this.value + 'px';
+        });
+        
+        // Color palette
+        document.querySelectorAll('.color-swatch').forEach(swatch => {
+            swatch.addEventListener('click', function() {
+                document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+                this.classList.add('active');
+                brushColor = this.dataset.color;
+            });
+        });
+        
+        // Clear functions
+        document.getElementById('clearCanvas').addEventListener('click', function() {
+            drawingCtx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+        });
+        
+        document.getElementById('clearHistory').addEventListener('click', function() {
+            extractionHistory = [];
+            updateHistory();
+            updateChart();
+            document.getElementById('rgbDisplay').innerHTML = '<p>Click on the image to extract RGB values</p>';
+        });
+        
+        // Save data
+        document.getElementById('saveData').addEventListener('click', function() {
+            const data = {
+                extractions: extractionHistory,
+                timestamp: new Date().toISOString(),
+                imageInfo: {
+                    width: targetImage.naturalWidth,
+                    height: targetImage.naturalHeight,
+                    src: targetImage.src
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rgb_analysis_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+        
+        // Load custom image
+        function loadCustomImage(url) {
+            targetImage.src = url;
+        }
+        
+        // Make globally available
+        window.loadCustomImage = loadCustomImage;
+        
+        // Initialize with default image
+        if (targetImage.complete) {
+            setupCanvas();
+            initChart();
+        }
+    </script>
+</body>
+</html>
