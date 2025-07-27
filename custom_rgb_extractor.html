@@ -119,11 +119,36 @@
     <script>
         let clickHistory = [];
         
-        // Sample image URL - replace with your image
-        const imageUrl = 'https://via.placeholder.com/800x600/ff6b6b/ffffff?text=Sample+Image';
+        // Sample images with fallbacks
+        const sampleImages = [
+            'https://picsum.photos/800/600?random=3',
+            'https://via.placeholder.com/800x600/ff6b6b/ffffff?text=RGB+Demo+Image',
+            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjZiNmI7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM0ZWNkYzQ7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNDViN2QxO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNTAiIHI9IjgwIiBmaWxsPSIjZmY0NDQ0Ii8+PGNpcmNsZSBjeD0iNjAwIiBjeT0iMTUwIiByPSI4MCIgZmlsbD0iIzQ0ZmY0NCIvPjxjaXJjbGUgY3g9IjQwMCIgY3k9IjQ1MCIgcj0iODAiIGZpbGw9IiM0NDQ0ZmYiLz48dGV4dCB4PSI0MDAiIHk9IjMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiNmZmYiPkNsaWNrIGZvciBSR0IgVmFsdWVzPC90ZXh0Pjwvc3ZnPg=='
+        ];
         
-        // Initialize the image
-        document.getElementById('targetImage').src = imageUrl;
+        let currentImageIndex = 0;
+        
+        // Load image with fallback
+        function loadImageWithFallback() {
+            if (currentImageIndex >= sampleImages.length) {
+                console.error('All fallback images failed to load');
+                return;
+            }
+            
+            const img = document.getElementById('targetImage');
+            img.onload = function() {
+                console.log('Image loaded successfully');
+            };
+            img.onerror = function() {
+                console.warn(`Image failed to load: ${sampleImages[currentImageIndex]}`);
+                currentImageIndex++;
+                loadImageWithFallback();
+            };
+            img.src = sampleImages[currentImageIndex];
+        }
+        
+        // Initialize with fallback
+        loadImageWithFallback();
         
         // Function to get RGB values at clicked position
         function getRGBAtPosition(img, x, y) {

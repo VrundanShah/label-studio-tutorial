@@ -228,9 +228,14 @@
                 </div>
                 
                 <div class="image-container">
-                    <img id="targetImage" src="https://via.placeholder.com/800x600/87CEEB/000000?text=Sample+Image+for+Analysis" alt="Image for analysis">
+                    <img id="targetImage" src="" alt="Loading image for analysis...">
                     <canvas id="drawingCanvas" class="drawing-canvas"></canvas>
                     <canvas id="hiddenCanvas" style="display: none;"></canvas>
+                    <div id="imageLoader" style="text-align: center; padding: 20px; display: none;">
+                        <p>Loading image...</p>
+                        <button onclick="loadNextImage()" style="margin: 5px; padding: 10px;">Try Next Image</button>
+                        <button onclick="loadCustomImagePrompt()" style="margin: 5px; padding: 10px;">Load Custom Image</button>
+                    </div>
                 </div>
             </div>
             
@@ -596,19 +601,99 @@
             URL.revokeObjectURL(url);
         });
         
+        // Sample image URLs with fallbacks
+        const sampleImages = [
+            // High-quality sample images
+            'https://picsum.photos/800/600?random=1',
+            'https://picsum.photos/800/600?random=2',
+            'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=600&fit=crop&q=80',
+            // Fallback placeholder
+            'https://via.placeholder.com/800x600/4CAF50/FFFFFF?text=RGB+Analysis+Demo',
+            // SVG fallback with colored regions
+            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjZiNmI7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIzMyUiIHN0eWxlPSJzdG9wLWNvbG9yOiM0ZWNkYzQ7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSI2NiUiIHN0eWxlPSJzdG9wLWNvbG9yOiM0NWI3ZDE7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojOTY3YWRjO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIxNTAiIHI9IjUwIiBmaWxsPSIjZmY0NDQ0Ii8+PGNpcmNsZSBjeD0iNjAwIiBjeT0iMTUwIiByPSI1MCIgZmlsbD0iIzQ0ZmY0NCIvPjxjaXJjbGUgY3g9IjIwMCIgY3k9IjQ1MCIgcj0iNTAiIGZpbGw9IiM0NDQ0ZmYiLz48Y2lyY2xlIGN4PSI2MDAiIGN5PSI0NTAiIHI9IjUwIiBmaWxsPSIjZmZmZjQ0Ii8+PHJlY3QgeD0iMzAwIiB5PSIyNTAiIHdpZHRoPSIyMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIvPjx0ZXh0IHg9IjQwMCIgeT0iMzEwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZpbGw9IiMzMzMiPkNsaWNrIGZvciBSR0IgQW5hbHlzaXM8L3RleHQ+PC9zdmc+'
+        ];
+        
+        let currentImageIndex = 0;
+        
+        // Load image with fallback handling
+        function loadImageWithFallback() {
+            if (currentImageIndex >= sampleImages.length) {
+                showImageLoader();
+                return;
+            }
+            
+            const img = targetImage;
+            const imageLoader = document.getElementById('imageLoader');
+            
+            // Hide loader while trying to load image
+            imageLoader.style.display = 'none';
+            img.style.display = 'block';
+            
+            img.onload = function() {
+                console.log(`Image loaded successfully: ${sampleImages[currentImageIndex]}`);
+                setupCanvas();
+                initChart();
+                imageLoader.style.display = 'none';
+            };
+            
+            img.onerror = function() {
+                console.warn(`Failed to load image: ${sampleImages[currentImageIndex]}`);
+                currentImageIndex++;
+                setTimeout(loadImageWithFallback, 1000); // Try next image after delay
+            };
+            
+            img.src = sampleImages[currentImageIndex];
+        }
+        
+        // Show image loader interface
+        function showImageLoader() {
+            document.getElementById('imageLoader').style.display = 'block';
+            targetImage.style.display = 'none';
+        }
+        
+        // Load next image in fallback list
+        function loadNextImage() {
+            currentImageIndex = (currentImageIndex + 1) % sampleImages.length;
+            loadImageWithFallback();
+        }
+        
+        // Prompt user for custom image URL
+        function loadCustomImagePrompt() {
+            const url = prompt('Enter image URL:', 'https://');
+            if (url && url.startsWith('http')) {
+                loadCustomImage(url);
+            }
+        }
+        
         // Load custom image
         function loadCustomImage(url) {
-            targetImage.src = url;
+            const img = targetImage;
+            const imageLoader = document.getElementById('imageLoader');
+            
+            imageLoader.style.display = 'none';
+            img.style.display = 'block';
+            
+            img.onload = function() {
+                console.log(`Custom image loaded: ${url}`);
+                setupCanvas();
+                initChart();
+            };
+            
+            img.onerror = function() {
+                alert('Failed to load custom image. Please try a different URL.');
+                showImageLoader();
+            };
+            
+            img.src = url;
         }
         
-        // Make globally available
+        // Make functions globally available
         window.loadCustomImage = loadCustomImage;
+        window.loadNextImage = loadNextImage;
+        window.loadCustomImagePrompt = loadCustomImagePrompt;
         
-        // Initialize with default image
-        if (targetImage.complete) {
-            setupCanvas();
-            initChart();
-        }
+        // Initialize with fallback images
+        loadImageWithFallback();
     </script>
 </body>
 </html>
