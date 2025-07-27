@@ -19,18 +19,21 @@ echo "📊 Project: Advanced RGB Analysis with Graph Visualization"
 echo "🖌️ Features: RGB Extraction + Graph Visualization + Brush Annotation"
 
 label-studio start \
-    --init \
-    --project-name "Advanced RGB Analysis" \
-    --label-config advanced_label_studio_project/label_config.xml \
-    --input-path advanced_label_studio_project/tasks.json \
     --port 8080 \
     --host 0.0.0.0
 
 echo "🏁 Advanced Label Studio started successfully!"
 echo "🌐 Open http://localhost:8080 in your browser"
-echo "🎨 Features available:"
-echo "   - Click images for RGB extraction"
-echo "   - View real-time RGB graphs"
-echo "   - Use brush tools for annotation"
+echo ""
+echo "📋 Next Steps:"
+echo "1. Create an account or log in"
+echo "2. Create a new project"
+echo "3. Follow the setup instructions in setup_instructions.md"
+echo ""
+echo "🎨 Features available after setup:"
+echo "   - Click images for RGB extraction with real-time graphs"
+echo "   - Use brush tools for object annotation"
 echo "   - Draw rectangles around objects"
 echo "   - Export comprehensive analysis data"
+echo ""
+echo "📖 For detailed setup instructions, see: setup_instructions.md"

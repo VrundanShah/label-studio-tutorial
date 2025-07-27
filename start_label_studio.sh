@@ -18,10 +18,6 @@ echo "🎯 Starting Label Studio on http://localhost:8080"
 echo "📊 Project: RGB Color Extraction"
 
 label-studio start \
-    --init \
-    --project-name "RGB Color Extraction" \
-    --label-config label_studio_project/label_config.xml \
-    --input-path label_studio_project/tasks.json \
     --port 8080 \
     --host 0.0.0.0
 
