@@ -1,0 +1,23 @@
+<View>
+  <Header value="Click on the image to extract RGB values"/>
+  
+  <!-- Image display -->
+  <Image name="image" value="$image" zoom="true" zoomBy="1.5"/>
+  
+  <!-- Custom HTML for RGB extraction -->
+  <View style="margin-top: 20px;">
+    <Header value="RGB Color Picker"/>
+    <Text name="rgb_info" value="Click on the image to see RGB values here" />
+  </View>
+  
+  <!-- Hidden text field to store RGB values -->
+  <TextArea name="rgb_values" toName="image" placeholder="RGB values will appear here..." rows="3"/>
+  
+  <!-- Optional: Add choices for classification if needed -->
+  <Choices name="image_quality" toName="image">
+    <Choice value="good"/>
+    <Choice value="average"/>
+    <Choice value="poor"/>
+  </Choices>
+  
+</View>
