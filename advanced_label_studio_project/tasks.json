@@ -1,0 +1,83 @@
+[
+  {
+    "data": {
+      "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=600&fit=crop&q=80"
+    },
+    "annotations": [],
+    "predictions": [],
+    "meta": {
+      "description": "Product watch for color analysis",
+      "expected_objects": [
+        "watch",
+        "strap",
+        "face"
+      ],
+      "analysis_focus": "color consistency, material analysis"
+    }
+  },
+  {
+    "data": {
+      "image": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=600&fit=crop&q=80"
+    },
+    "annotations": [],
+    "predictions": [],
+    "meta": {
+      "description": "Nike shoe for quality inspection",
+      "expected_objects": [
+        "shoe",
+        "logo",
+        "sole"
+      ],
+      "analysis_focus": "color matching, defect detection"
+    }
+  },
+  {
+    "data": {
+      "image": "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=600&fit=crop&q=80"
+    },
+    "annotations": [],
+    "predictions": [],
+    "meta": {
+      "description": "Sunglasses for color analysis",
+      "expected_objects": [
+        "frame",
+        "lenses",
+        "bridge"
+      ],
+      "analysis_focus": "color distribution, reflection analysis"
+    }
+  },
+  {
+    "data": {
+      "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=600&fit=crop&q=80"
+    },
+    "annotations": [],
+    "predictions": [],
+    "meta": {
+      "description": "Headphones for material and color analysis",
+      "expected_objects": [
+        "headband",
+        "ear_cups",
+        "logo"
+      ],
+      "analysis_focus": "color uniformity, surface analysis"
+    }
+  },
+  {
+    "data": {
+      "image": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800&h=600&fit=crop&q=80"
+    },
+    "annotations": [],
+    "predictions": [],
+    "meta": {
+      "description": "Smartphone for screen and body color analysis",
+      "expected_objects": [
+        "screen",
+        "body",
+        "camera",
+        "buttons"
+      ],
+      "analysis_focus": "color accuracy, screen analysis"
+    }
+  }
+]

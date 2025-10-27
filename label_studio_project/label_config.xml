@@ -1,0 +1,32 @@
+
+<View>
+  <Header value="Click on the image to extract RGB values"/>
+  
+  <!-- Image display with zoom capabilities -->
+  <Image name="image" value="$image" zoom="true" zoomBy="1.5" crosshair="true"/>
+  
+  <!-- RGB Information Display -->
+  <View style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 6px;">
+    <Header value="RGB Color Information"/>
+    <Text name="rgb_info" value="Click coordinates and RGB values will appear here" />
+  </View>
+  
+  <!-- Text area to store RGB extraction data -->
+  <TextArea name="rgb_data" 
+            toName="image" 
+            placeholder="RGB extraction data (JSON format)&#10;Format: {&quot;clicks&quot;: [{&quot;x&quot;: 100, &quot;y&quot;: 150, &quot;rgb&quot;: [255, 128, 64]}]}" 
+            rows="6"
+            required="false"/>
+  
+  <!-- Point annotation for marking clicked locations -->
+  <KeyPointLabels name="points" toName="image">
+    <Label value="rgb_point" background="red"/>
+  </KeyPointLabels>
+  
+  <!-- Optional classification -->
+  <Choices name="image_category" toName="image" choice="single">
+    <Choice value="processed"/>
+    <Choice value="needs_analysis"/>
+    <Choice value="completed"/>
+  </Choices>
+</View>

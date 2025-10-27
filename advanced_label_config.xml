@@ -1,0 +1,64 @@
+<View>
+  <Header value="Advanced Image Analysis with RGB Extraction and Brush Annotation"/>
+  
+  <!-- Load Chart.js for graph visualization -->
+  <HyperText name="chart_loader" value='&lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;'/>
+  
+  <!-- Load advanced RGB extractor plugin -->
+  <HyperText name="plugin_loader" value='&lt;script&gt;
+    // Advanced RGB Extractor Plugin will be loaded here
+    // This provides RGB extraction with graph visualization
+    console.log("Advanced RGB Extractor Plugin Loading...");
+  &lt;/script&gt;'/>
+  
+  <!-- Image display with zoom and crosshair -->
+  <Image name="image" value="$image" zoom="true" zoomBy="1.5" crosshair="true"/>
+  
+  <!-- Brush annotation for painting on image -->
+  <BrushLabels name="brush" toName="image">
+    <Label value="object" background="red"/>
+    <Label value="background" background="blue"/>
+    <Label value="region_of_interest" background="green"/>
+    <Label value="defect" background="orange"/>
+    <Label value="highlight" background="yellow"/>
+  </BrushLabels>
+  
+  <!-- Point annotation for marking clicked locations -->
+  <KeyPointLabels name="points" toName="image">
+    <Label value="rgb_sample" background="purple"/>
+    <Label value="reference_point" background="cyan"/>
+  </KeyPointLabels>
+  
+  <!-- RGB Information Display -->
+  <View style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 6px;">
+    <Header value="RGB Color Information &amp; Analysis"/>
+    <Text name="rgb_info" value="Click on the image to extract RGB values and see them plotted on the graph" />
+  </View>
+  
+  <!-- RGB Data Storage -->
+  <TextArea name="rgb_data" 
+            toName="image" 
+            placeholder="RGB extraction data will be stored here in JSON format..." 
+            rows="4"
+            required="false"/>
+  
+  <!-- Analysis Notes -->
+  <TextArea name="analysis_notes" 
+            toName="image" 
+            placeholder="Add your analysis notes about the image, colors, and annotations..." 
+            rows="3"
+            required="false"/>
+  
+  <!-- Object Classification -->
+  <Choices name="object_type" toName="image" choice="single">
+    <Choice value="product"/>
+    <Choice value="defective_item"/>
+    <Choice value="sample"/>
+    <Choice value="reference"/>
+    <Choice value="other"/>
+  </Choices>
+  
+  <!-- Quality Assessment -->
+  <Rating name="color_quality" toName="image" maxRating="5" icon="star" size="medium"/>
+  
+</View>
